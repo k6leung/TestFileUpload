@@ -2,7 +2,10 @@ package com.test.file.controller;
 
 
 
+import java.net.URI;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -12,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.util.UriTemplate;
 
 import com.test.file.model.TestData;
 import com.test.file.repository.TestDataDao;
@@ -31,7 +35,7 @@ public class TestDataRestController {
 		super();
 	}
 	
-	@RequestMapping("/download/{filename}")
+	@RequestMapping("/file/{filename}")
 	public ResponseEntity<byte[]> findFileContentByFilename(@PathVariable("filename") String fileName) {
 		ResponseEntity<byte[]> result = null;
 		
@@ -50,13 +54,23 @@ public class TestDataRestController {
 		return result;
 	}
 	
-	@RequestMapping(value="/upload",
+	@RequestMapping(value="/file",
 					method=RequestMethod.POST)
-	public String uploadFile(@RequestParam("file") MultipartFile file) {
+	public ResponseEntity<URI> uploadFile(@RequestParam("file") MultipartFile file,
+											@Value("#{request.requestURL}") StringBuffer originalUrl) {
+		ResponseEntity<URI> result = null;
+		
+		String fileName = file.getOriginalFilename();
 		
 		this.testDataService.saveFile(file);
 		
-		return "OK";
+		String resourceUrlTemplateStr = originalUrl.append("/{fileName}").toString();
+		UriTemplate uriTemplate = new UriTemplate(resourceUrlTemplateStr);
+		
+		URI resourceUri = uriTemplate.expand(fileName);
+		result = new ResponseEntity<URI>(resourceUri, HttpStatus.CREATED);
+		
+		return result;
 	}
 
 }
