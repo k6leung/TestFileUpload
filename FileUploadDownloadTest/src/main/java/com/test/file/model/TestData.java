@@ -39,6 +39,17 @@ public class TestData implements Serializable {
 
 	public TestData() {
 	}
+	
+	public TestData(String filename,
+					String mimeType,
+					byte[] fileContent,
+					Integer version) {
+		super();
+		this.filename = filename;
+		this.mimetype = mimeType;
+		this.fileContent = fileContent;
+		this.version = version;
+	}
 
 	public Integer getId() {
 		return this.id;

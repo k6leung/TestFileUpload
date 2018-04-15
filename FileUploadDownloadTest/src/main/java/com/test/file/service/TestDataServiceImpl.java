@@ -27,7 +27,7 @@ public class TestDataServiceImpl implements TestDataService {
 			String fileName = file.getOriginalFilename();
 			String mimeType = file.getContentType();
 			
-			Integer maxVersion = this.dao.findMaxFileVersionByFilename(fileName);
+			/*Integer maxVersion = this.dao.findMaxFileVersionByFilename(fileName);
 			Integer version = new Integer(maxVersion.intValue() + 1);
 			
 			TestData newRecord = new TestData();
@@ -36,7 +36,8 @@ public class TestDataServiceImpl implements TestDataService {
 			newRecord.setMimetype(mimeType);
 			newRecord.setVersion(version);
 			
-			this.dao.save(newRecord);
+			this.dao.save(newRecord);*/
+			this.dao.persistNewFile(fileName, mimeType, fileContent);
 		} catch (Exception e) {
 			e.printStackTrace();
 			throw new RuntimeException(e.getMessage(), e);
